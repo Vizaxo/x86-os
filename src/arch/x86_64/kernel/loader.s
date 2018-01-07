@@ -17,7 +17,8 @@ load:
 multiboot_supported:
         mov esp, stack_top      ; Setup stack
 
-        ;; TODO: call kernel
+        extern kmain
+        call kmain
 
 halt:   cli
 loop:   hlt
