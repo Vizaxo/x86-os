@@ -13,8 +13,8 @@ arch ?= x86_64
 target := $(arch)-elf
 kernel := build/kernel-$(arch).bin
 iso := build/os-$(arch).iso
-linker_script := src/arch/$(arch)/kernel/kernel.ld
-grub_cfg := src/arch/$(arch)/kernel/grub.cfg
+linker_script := src/arch/$(arch)/loader/kernel.ld
+grub_cfg := src/arch/$(arch)/loader/grub.cfg
 
 WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
