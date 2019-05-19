@@ -5,7 +5,7 @@ ASM_SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.s")
 C_SRCFILES := $(shell find $(PROJDIRS) -type f -name "*.c")
 SRCFILES := $(ASM_SRCFILES) $(C_SRCFILES)
 HDRFILES := $(shell find $(PROJDIRS) -type f -name "*.h")
-OBJFILES := $(patsubst src%,build%,$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(SRCFILES))))
+OBJFILES := $(patsubst src%,build%,$(patsubst %.c,%.o,$(patsubst %.s,%.s.o,$(SRCFILES))))
 
 ALLFILES = $(SRCFILES) $(HDRFILES) $(AUXFILES)
 
@@ -57,7 +57,7 @@ kernel: $(kernel)
 $(kernel): $(OBJFILES) $(linker_script)
 	@$(LD) $(LDFLAGS) -n -T $(linker_script) -o $(kernel) $(OBJFILES)
 
-build/%.o: src/%.s
+build/%.s.o: src/%.s
 	@mkdir -p $(shell dirname $@)
 	@$(AS) -felf64 $< -o $@
 

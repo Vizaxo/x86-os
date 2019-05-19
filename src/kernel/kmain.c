@@ -1,13 +1,12 @@
 #include "kmain.h"
 #include "vga.h"
 #include "term.h"
+#include "idt.h"
 
 void kmain(void)
 {
-	for (int i = 0; i <= 40; i++) {
-		term_putchar('a' + i);
-		term_putchar('b');
-		term_putchar('\n');
-	}
-	term_putstr("Hi there!\nHello!");
+	setup_idt();
+	term_putstr("Hi there!\nHello!\n");
+	asm("int3"); //fire interrupt
+	term_putstr("Didn't crash");
 }
