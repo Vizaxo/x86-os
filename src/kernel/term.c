@@ -23,8 +23,12 @@ void term_putchar(char c) {
 
 void term_newline(void) {
 	state.col = 0;
-	if (++state.row >= VGA_HEIGHT)
-		state.row = 0;
+	if (++state.row >= VGA_HEIGHT) {
+		for (size_t i = 1; i <= VGA_HEIGHT; i++)
+			vga_copy_line(i, i-1);
+		state.row = VGA_HEIGHT - 1;
+		vga_clear_line(VGA_HEIGHT - 1);
+	}
 }
 
 void term_putstr(const char* str) {
