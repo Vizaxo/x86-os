@@ -1,6 +1,6 @@
 # my-hobby-os
 
-This is a simple operating system I'm building, so I can learn how operating systems work and are made. It's written in assembly and C, targeting x86_64.
+This is a simple operating system I'm building, so I can learn how operating systems work and how they are made. It's written in assembly and C, targeting x86_64.
 
 ## Code overview
 
