@@ -22,7 +22,7 @@ WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wconversion -Wstrict-prototypes
 CFLAGS := -m64 -g -ffreestanding -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 $(WARNINGS)
 
-cross_dir := $(HOME)/opt/cross/bin
+cross_dir ?= $(HOME)/opt/cross/bin
 CC_DIR ?= $(cross_dir)
 LD_DIR ?= $(cross_dir)
 AS_DIR ?= $(cross_dir)
@@ -49,7 +49,7 @@ $(iso): $(kernel) $(grub_cfg)
 	@mkdir -p build/isofiles/boot/grub
 	@cp $(kernel) build/isofiles/boot/kernel.bin
 	@cp $(grub_cfg) build/isofiles/boot/grub
-	@grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
+	@grub2-mkrescue -o $(iso) build/isofiles 2> /dev/null
 	-@$(RM) -r build/isofiles
 
 kernel: $(kernel)
