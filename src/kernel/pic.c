@@ -33,7 +33,7 @@ void pic_remap(void) {
 	outb(PIC2_DATA, PIC_8086); //8086 mode
 	io_wait();
 
-	outb(PIC1_DATA, mask1);
+	outb(PIC1_DATA, mask1 | (uint8_t)~(1 << 1)); //temoporarily disable timer
 	io_wait();
 	outb(PIC2_DATA, mask2);
 }

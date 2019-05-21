@@ -10,6 +10,7 @@ void handler_double_fault(void);
 void general_protection_fault(void);
 void page_fault(void);
 void timer_interrupt(void);
+void keyboard_interrupt(void);
 struct idt_descriptor make_idt_descriptor(
 	uint64_t offset, uint16_t selector, uint8_t ist, uint8_t type_attr);
 void load_idt(void);

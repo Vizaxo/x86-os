@@ -39,6 +39,7 @@ void setup_idt(void) {
 	idt[13] = make_idt_descriptor((uint64_t)&general_protection_fault, (1 << 3), 0, 0x8e);
 	idt[14] = make_idt_descriptor((uint64_t)&page_fault, (1 << 3), 0, 0x8e);
 	idt[32] = make_idt_descriptor((uint64_t)&timer_interrupt, (1 << 3), 0, 0x8e);
+	idt[33] = make_idt_descriptor((uint64_t)&keyboard_interrupt, (1 << 3), 0, 0x8e);
 
 	load_idt();
 }

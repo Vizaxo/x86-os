@@ -2,6 +2,7 @@ section .text
 bits 64
 
 extern term_putstr
+extern kb_get_key
 extern idtr
 extern pic_send_eoi
 
@@ -36,6 +37,13 @@ timer_interrupt:
         mov rdi, timer_str
         call term_putstr
         mov rdi, 0
+        call pic_send_eoi
+        iretq
+
+global keyboard_interrupt
+keyboard_interrupt:
+        call kb_get_key
+        mov rdi, 1
         call pic_send_eoi
         iretq
 
