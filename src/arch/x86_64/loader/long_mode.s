@@ -25,6 +25,7 @@ long_mode_code:
         call kmain
 
         hlt
+        jmp 1b
 
 
 bits 32
@@ -133,9 +134,11 @@ p2_table:
 ;;; GDT
 section .rodata
 gdt64:
-        dq 0 ; zero entry
+        dq 0                    ; zero entry
 .code: equ $ - gdt64
         dq (1<<43) | (1<<44) | (1<<47) | (1<<53)
+.data: equ $ - gdt64
+        dq (0<<43) | (1<<44) | (1<<47) | (1<<53)
 .pointer:
         dw $ - gdt64 - 1
         dq gdt64

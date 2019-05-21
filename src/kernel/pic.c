@@ -1,8 +1,6 @@
 #include "pic.h"
 #include "port-io.h"
 
-#include <stdint.h>
-
 #define PIC1_CMD 0x20
 #define PIC1_DATA 0x21
 #define PIC2_CMD 0xA0
@@ -11,6 +9,7 @@
 #define ICW4 0x01
 #define INIT 0x10
 #define PIC_8086 0x01
+#define EOI 0x20
 
 void pic_remap(void) {
 	uint8_t mask1, mask2;
@@ -36,5 +35,12 @@ void pic_remap(void) {
 
 	outb(PIC1_DATA, mask1);
 	io_wait();
-	outb(PIC1_DATA, mask2);
+	outb(PIC2_DATA, mask2);
+}
+
+/* Send end-of-interrupt signal to the PIC once the interrupt has been handled */
+void pic_send_eoi(uint8_t irq) {
+	if(irq >= 8)
+		outb(PIC2_CMD, EOI);
+	outb(PIC1_CMD, EOI);
 }
