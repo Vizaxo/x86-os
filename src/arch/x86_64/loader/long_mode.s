@@ -6,14 +6,17 @@ bits 32
 long_mode:
         call check_cpuid
         call check_long_mode
-        call setup_page_tables
+        call identity_map_lower
         call enable_paging
 
         lgdt [gdt64.pointer]
         jmp gdt64.code:long_mode_code
 
+
 bits 64
 long_mode_code:
+        call map_higher_kernel_pages
+
         mov ax, 0
         mov ss, ax
         mov ds, ax
@@ -21,11 +24,54 @@ long_mode_code:
         mov fs, ax
         mov gs, ax
 
+        ;; Use the high-address stack
+        extern kernel_stack_bottom
+        mov rsp, kernel_stack_bottom
+
+        ; Long jump to kmain
         extern kmain
         call kmain
 
         hlt
         jmp 1b
+
+
+;;; Map the kernel into a high address
+map_higher_kernel_pages:
+        ;; Kernel offset = ff ff ff ff ff 00 00 00
+        mov eax, p3_table_high
+        or eax, 0x11
+        mov [p4_table + 511*8], eax          ; bits 111111111
+
+        mov eax, p2_table_high
+        or eax, 0b11
+        mov [p3_table_high + 511*8], eax     ; bits 111111111
+
+        ;; map first P2 entry to P1 table
+        mov eax, p1_table_high
+        or eax, 0b11
+        mov [p2_table_high + 504*8], eax     ; bits 111111000
+
+        mov ecx, 0
+
+.map_p1_table:
+        ;;  map ecx-th P2 entry to huge page starting at 4KiB*ecx
+        mov eax, 0x1000         ; 4KiB
+        mul ecx                 ; start address of ecx-th page = ecx*4KiB
+        or eax, 0b11            ; present + writable
+        mov [p1_table_high + ecx * 8], eax ; map ecx-th entry
+
+        inc ecx
+        cmp ecx, 512            ; map 512 pages
+        jne .map_p1_table       ; map next entry
+
+
+        ;; reload cr3 to force TLB flush
+        mov rcx, cr3
+        mov cr3, rcx
+
+        ret
+
 
 
 bits 32
@@ -65,7 +111,7 @@ check_long_mode:
 
 
 
-setup_page_tables:
+identity_map_lower:
 
         ;;  map first P4 entry to P3 table
         mov eax, p3_table
@@ -135,6 +181,12 @@ p3_table:
 p2_table:
         resb 4096
 p1_table:
+        resb 4096
+p3_table_high:
+        resb 4096
+p2_table_high:
+        resb 4096
+p1_table_high:
         resb 4096
 
 
