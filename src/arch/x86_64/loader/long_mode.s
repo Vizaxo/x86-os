@@ -77,19 +77,24 @@ setup_page_tables:
         or eax, 0b11
         mov [p3_table], eax
 
+        ;; map first P2 entry to P1 table
+        mov eax, p1_table
+        or eax, 0b11
+        mov [p2_table], eax
+
         ;; Map each P2 table into a 2MiB (huge) page
         mov ecx, 0
 
-.map_p2_table:
-        ;;  map ecx-th P2 entry to huge page starting at 2MiB*ecx
-        mov eax, 0x2000000      ; 2MiB
-        mul ecx                 ; start address of ecx-th page = ecx*2MiB
-        or eax, 0b10000011      ; present + writable + huge
-        mov [p2_table + ecx * 8], eax ; map ecx-th entry
+.map_p1_table:
+        ;;  map ecx-th P2 entry to 4KiB pages starting at 4KiB*ecx
+        mov eax, 0x1000         ; 4KiB
+        mul ecx                 ; start address of ecx-th page = ecx*4KiB
+        or eax, 0b11            ; present + writable
+        mov [p1_table + ecx * 8], eax ; map ecx-th entry
 
         inc ecx
         cmp ecx, 512            ; map 512 pages
-        jne .map_p2_table       ; map next entry
+        jne .map_p1_table
 
         ret
 
@@ -128,6 +133,8 @@ p4_table:
 p3_table:
         resb 4096
 p2_table:
+        resb 4096
+p1_table:
         resb 4096
 
 
