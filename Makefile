@@ -19,7 +19,8 @@ grub_cfg := src/arch/$(arch)/loader/grub.cfg
 WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
             -Wredundant-decls -Wnested-externs -Winline -Wno-long-long \
-            -Wconversion -Wstrict-prototypes
+            -Wstrict-prototypes
+# TODO: re-enable -Wconversion
 CFLAGS := -m64 -g -ffreestanding -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 $(WARNINGS)
 
 cross_dir ?= $(HOME)/opt/cross/bin

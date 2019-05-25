@@ -174,6 +174,7 @@ enable_paging:
 ;;; Page tables
 section .bss
 align 4096
+global p4_table
 p4_table:
         resb 4096
 p3_table:
