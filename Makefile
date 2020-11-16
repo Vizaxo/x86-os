@@ -23,12 +23,12 @@ WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
 # TODO: re-enable -Wconversion
 CFLAGS := -m64 -g -ffreestanding -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 $(WARNINGS)
 
-cross_dir ?= $(HOME)/opt/cross/bin
+cross_dir ?= $(HOME)/opt/cross/bin/
 CC_DIR ?= $(cross_dir)
 LD_DIR ?= $(cross_dir)
 AS_DIR ?= $(cross_dir)
-CC := $(CC_DIR)/$(target)-gcc
-LD := $(LD_DIR)/$(target)-ld
+CC := $(CC_DIR)$(target)-gcc
+LD := $(LD_DIR)$(target)-ld
 AS := nasm
 
 .PHONY: all clean run iso kernel debug
@@ -50,7 +50,7 @@ $(iso): $(kernel) $(grub_cfg)
 	@mkdir -p build/isofiles/boot/grub
 	@cp $(kernel) build/isofiles/boot/kernel.bin
 	@cp $(grub_cfg) build/isofiles/boot/grub
-	@grub2-mkrescue -o $(iso) build/isofiles 2> /dev/null
+	@grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
 	-@$(RM) -r build/isofiles
 
 kernel: $(kernel)
