@@ -12,7 +12,7 @@ ALLFILES = $(SRCFILES) $(HDRFILES) $(AUXFILES)
 arch ?= x86_64
 target := $(arch)-elf
 kernel := build/kernel-$(arch).bin
-iso := build/os-$(arch).iso
+iso := build/kernel-$(arch).iso
 linker_script := src/arch/$(arch)/loader/kernel.ld
 grub_cfg := src/arch/$(arch)/loader/grub.cfg
 
@@ -22,6 +22,7 @@ WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
             -Wstrict-prototypes
 # TODO: re-enable -Wconversion
 CFLAGS := -m64 -g -ffreestanding -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2 $(WARNINGS)
+QEMUFLAGS := -display curses
 
 cross_dir ?= $(HOME)/opt/cross/bin/
 CC_DIR ?= $(cross_dir)
@@ -33,35 +34,36 @@ AS := nasm
 
 .PHONY: all clean run iso kernel debug
 
-all: $(kernel)
+all: $(iso)
 
 clean:
-	-@$(RM) -r build
+	$(RM) -r build
 
 run: $(iso)
-	@qemu-system-$(arch) -cdrom $(iso)
+	qemu-system-$(arch) $(QEMUFLAGS) -cdrom $(iso)
+
 
 debug: $(iso)
-	@qemu-system-$(arch) -s -S -cdrom $(iso)
+	qemu-system-$(arch) $(QEMUFLAGS) -s -S -cdrom $(iso)
 
 iso: $(iso)
 
 $(iso): $(kernel) $(grub_cfg)
-	@mkdir -p build/isofiles/boot/grub
-	@cp $(kernel) build/isofiles/boot/kernel.bin
-	@cp $(grub_cfg) build/isofiles/boot/grub
-	@grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
+	mkdir -p build/isofiles/boot/grub
+	cp $(kernel) build/isofiles/boot/kernel.bin
+	cp $(grub_cfg) build/isofiles/boot/grub
+	grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
 	-@$(RM) -r build/isofiles
 
 kernel: $(kernel)
 
 $(kernel): $(OBJFILES) $(linker_script)
-	@$(LD) $(LDFLAGS) -n -T $(linker_script) -o $(kernel) $(OBJFILES)
+	$(LD) $(LDFLAGS) -n -T $(linker_script) -o $(kernel) $(OBJFILES)
 
 build/%.s.o: src/%.s
-	@mkdir -p $(shell dirname $@)
-	@$(AS) -felf64 $< -o $@
+	mkdir -p $(shell dirname $@)
+	$(AS) -felf64 $< -o $@
 
 build/%.o: src/%.c
-	@mkdir -p $(shell dirname $@)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	mkdir -p $(shell dirname $@)
+	$(CC) $(CFLAGS) -c $< -o $@
