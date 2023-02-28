@@ -13,5 +13,9 @@ void kmain(void)
 	term_putstr("Didn't crash\n");
 	asm("sti"); //enable hardware interrupts
 
-	for(;;) asm("hlt"); //halt forever
+	while (!kernel_quit) asm("hlt");
+
+	// QEMU shutdown
+	asm("cli");
+	outw(0x604, 0x2000);
 }

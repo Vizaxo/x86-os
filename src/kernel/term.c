@@ -10,6 +10,9 @@ struct term_state {
 //Terminal state variable. This is modified by the terminal functions.
 struct term_state state = {0, 0, 0x0f};
 
+uint8_t kernel_quit = 0;
+
+
 void term_putchar(char c) {
 	switch (c) {
 	case '\n':
@@ -17,6 +20,9 @@ void term_putchar(char c) {
 		break;
 	case '\b':
 		term_backspace();
+		break;
+	case 'q':
+		kernel_quit = 1;
 		break;
 	default:
 		term_normalchar(c);

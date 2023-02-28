@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 void outb(uint16_t port, uint8_t x);
+void outw(uint16_t port, uint16_t x);
 uint8_t inb(uint16_t port);
 void io_wait(void);
 
