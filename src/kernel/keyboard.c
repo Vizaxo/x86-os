@@ -21,13 +21,22 @@ char kb_us_dvorak[256] =
 	KEY_ALT, ' ', KEY_CAPSLOCK,
 };
 
+char kb_us_qwerty[256] =
+{
+	0, KEY_ESC, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '[', ']', '\b',
+	'\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
+	KEY_LCTRL, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '\\',
+	KEY_LSHIFT, '<', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', KEY_RSHIFT, KEY_PTSCR,
+	KEY_ALT, ' ', KEY_CAPSLOCK,
+};
+
 char kb_get_key(void) {
 	uint8_t scancode = inb(0x60);
 	char c = 0;
 	if (scancode & 0x80) {
 		//Key up
 	} else {
-		c = kb_us_dvorak[scancode];
+		c = kb_us_qwerty[scancode];
 		if (c != 0)
 			term_putchar(c);
 	}
