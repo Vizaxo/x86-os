@@ -11,13 +11,15 @@ struct term_state {
 struct term_state state = {0, 0, 0x0f};
 
 void term_putchar(char c) {
-	if (c == '\n') {
+	switch (c) {
+	case '\n':
 		term_newline();
-	} else {
-		size_t offset = (state.row * VGA_WIDTH) + state.col;
-		vga_print_char(offset, state.color, (uint8_t)c);
-		if (++state.col >= VGA_WIDTH)
-			term_newline();
+		break;
+	case '\b':
+		term_backspace();
+		break;
+	default:
+		term_normalchar(c);
 	}
 }
 
@@ -29,6 +31,20 @@ void term_newline(void) {
 		state.row = VGA_HEIGHT - 1;
 		vga_clear_line(VGA_HEIGHT - 1);
 	}
+}
+
+void term_backspace(void) {
+	if (state.col != 0) --state.col;
+
+	size_t offset = state.row * VGA_WIDTH + state.col;
+	vga_print_char(offset, state.color, (uint8_t)' ');
+}
+
+void term_normalchar(char c) {
+	size_t offset = (state.row * VGA_WIDTH) + state.col;
+	vga_print_char(offset, state.color, (uint8_t)c);
+
+	if (++state.col >= VGA_WIDTH) term_newline();
 }
 
 void term_putstr(const char* str) {
