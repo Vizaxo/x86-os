@@ -30,6 +30,7 @@ The [interrupt descriptor table](https://en.wikipedia.org/wiki/Interrupt_descrip
   export cross_dir=/my/cross/compiler/directory/bin
   ```
 - [GRUB 2](https://www.gnu.org/software/grub/) is used as the bootloader; make sure you have the `grub2-mkrescue` command
+- mformat from GNU mtools is required by GRUB
 - [QEMU](https://www.qemu.org/) is needed if the OS is emulated (rather than being run on real hardware). The command `qemu-system-x86_64` is needed.
 - [xorriso](https://www.gnu.org/software/xorriso/) for building the ISO image
 - [nasm](https://www.nasm.us/) to assemble the assembly files
