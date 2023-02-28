@@ -60,7 +60,7 @@ err_str:
 general_protection_fault_str:
         db "EXCEPTION: general protection fault",10,0
 double_fault_str:
-        db "EXCEPTION: duoble fault",10,0
+        db "EXCEPTION: double fault",10,0
 timer_str:
         db "IRQ0: Timer interrupt received",10,0
 page_fault_str:
