@@ -37,4 +37,10 @@ SECTIONS {
         . = ALIGN(4096);
     }
 
+    .data : AT(ADDR(.data) - KERNEL_OFFSET)
+    {
+        *(EXCLUDE_FILE(build/arch/x86_64/loader/*.o) .data)
+        . = ALIGN(4096);
+    }
+
 }
