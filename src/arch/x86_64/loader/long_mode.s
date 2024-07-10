@@ -1,3 +1,6 @@
+PAGE_WRITABLE equ 0b10
+PAGE_PRESENT  equ 0b01
+
 extern print_error
 
 section .text
@@ -30,7 +33,8 @@ long_mode_code:
 
         ; Long jump to kmain
         extern kmain
-        call kmain
+	mov rax, kmain
+        call rax
 
         hlt
         jmp 1b
@@ -40,25 +44,33 @@ long_mode_code:
 map_higher_kernel_pages:
         ;; Kernel offset = ff ff ff ff ff 00 00 00
         mov eax, p3_table_high
-        or eax, 0x11
-        mov [p4_table + 511*8], eax          ; bits 111111111
+        or eax, PAGE_WRITABLE | PAGE_PRESENT
+	; map the highest page table
+	; logical address bits 47:39 = 1111111111
+        mov [p4_table + 511*8], eax		
 
         mov eax, p2_table_high
-        or eax, 0b11
-        mov [p3_table_high + 511*8], eax     ; bits 111111111
+        or eax, PAGE_WRITABLE | PAGE_PRESENT
+	; map the highest p3 entry
+	; logical address bits 30:38 = 1111111111
+        mov [p3_table_high + 511*8], eax 
 
         ;; map first P2 entry to P1 table
-        mov eax, p1_table_high
-        or eax, 0b11
-        mov [p2_table_high + 504*8], eax     ; bits 111111000
+        mov eax, p1_table_high			
+        or eax, PAGE_WRITABLE | PAGE_PRESENT
+	; map p4 entry #505
+	; bits 12:20 = 
+        mov [p2_table_high + 504*8], eax
+; ________________________________________________
+;ff ff ff ff ff 00 00 00
 
         mov ecx, 0
 
 .map_p1_table:
-        ;;  map ecx-th P2 entry to huge page starting at 4KiB*ecx
+        ;;  map ecx-th P1 entry to 4k page starting at 4KiB*ecx
         mov eax, 0x1000         ; 4KiB
         mul ecx                 ; start address of ecx-th page = ecx*4KiB
-        or eax, 0b11            ; present + writable
+        or eax, PAGE_WRITABLE | PAGE_PRESENT
         mov [p1_table_high + ecx * 8], eax ; map ecx-th entry
 
         inc ecx
@@ -147,6 +159,8 @@ identity_map_lower:
 
 
 enable_paging:
+	;; enable 4-level paging
+
         ;;  load P4 to cr3 register
         mov eax, p4_table
         mov cr3, eax
@@ -162,7 +176,7 @@ enable_paging:
         or eax, 1<<8
         wrmsr
 
-        ;; enable paging in cr0 register
+        ;; enable CR0.PG
         mov eax, cr0
         or eax, 1<<31
         mov cr0, eax
