@@ -1,4 +1,4 @@
-# my-hobby-os
+# x86-OS
 
 This is a simple operating system I'm building, so I can learn how operating systems work and how they are made. It's written in assembly and C, targeting x86_64.
 
